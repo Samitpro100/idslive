@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" href="/jsids/id.png" type="image/x-icon"> 
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modern Intrusion Detection System (IDS)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              500: '#22c55e',
+              600: '#16a34a',
+              900: '#14532d',
+            },
+            cyber: {
+              dark: '#0a0e17',
+              card: '#111827',
+              border: '#1f2937',
+              accent: '#06b6d4',
+              danger: '#ef4444',
+              warning: '#f59e0b',
+              success: '#10b981',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    
+    
+/* ==========================================
+   MIDNIGHT PURPLE SOC — IDS UI REDESIGN
+   Add this at the end of your existing <style>
+   ========================================== */
+
+:root {
+  --app-bg: #080b16;
+  --panel-bg: #12172a;
+  --panel-hover: #191f36;
+  --panel-border: #292744;
+  --accent: #a78bfa;
+  --accent-bright: #8b5cf6;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --danger: #fb7185;
+  --warning: #fbbf24;
+  --success: #34d399;
+}
+
+/* Main application background */
+body {
+  background: var(--app-bg) !important;
+  color: var(--text-main) !important;
+}
+
+/* Sidebar */
+aside {
+  background: #0c1020 !important;
+  border-color: var(--panel-border) !important;
+}
+
+/* Header */
+main > header {
+  background: rgba(12, 16, 32, 0.94) !important;
+  border-color: var(--panel-border) !important;
+}
+
+/* Dashboard cards and panels */
+.glass-panel {
+  background: linear-gradient(
+    145deg,
+    rgba(22, 27, 48, 0.96),
+    rgba(15, 19, 36, 0.96)
+  ) !important;
+
+  border: 1px solid var(--panel-border) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(14px);
+  transition: border-color 0.2s ease,
+              box-shadow 0.2s ease,
+              transform 0.2s ease;
+}
+
+.glass-panel:hover {
+  border-color: #48406f !important;
+}
+
+/* Replace the cyan accent with purple */
+[class~="text-cyan-400"] {
+  color: #a78bfa !important;
+}
+
+[class~="text-cyan-300"] {
+  color: #c4b5fd !important;
+}
+
+[class~="bg-cyan-500/10"] {
+  background-color: rgba(139, 92, 246, 0.13) !important;
+}
+
+[class~="bg-cyan-500"] {
+  background-color: #8b5cf6 !important;
+}
+
+[class~="hover:bg-cyan-400"]:hover {
+  background-color: #a78bfa !important;
+}
+
+[class~="border-cyan-500/20"] {
+  border-color: rgba(167, 139, 250, 0.3) !important;
+}
+
+[class~="border-cyan-500/30"] {
+  border-color: rgba(167, 139, 250, 0.4) !important;
+}
+
+[class~="accent-cyan-400"] {
+  accent-color: #a78bfa !important;
+}
+
+/* Purple glow instead of cyan glow */
+.glow-cyan {
+  box-shadow: 0 0 18px rgba(139, 92, 246, 0.16);
+}
+
+/* Navigation hover and active states */
+.nav-btn {
+  border-radius: 10px !important;
+  transition: all 0.2s ease !important;
+}
+
+.nav-btn:hover {
+  background: rgba(139, 92, 246, 0.09) !important;
+}
+
+.nav-btn.active {
+  background: rgba(139, 92, 246, 0.14) !important;
+  border-color: rgba(167, 139, 250, 0.35) !important;
+}
+
+/* Buttons */
+button {
+  transition: background-color 0.18s ease,
+              border-color 0.18s ease,
+              color 0.18s ease,
+              transform 0.18s ease;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 2px;
+}
+
+/* Inputs and configuration controls */
+input[type="text"],
+select {
+  background-color: #0b1020 !important;
+  border-color: #34314f !important;
+  color: #e2e8f0 !important;
+  border-radius: 8px;
+}
+
+input[type="text"]:focus,
+select:focus {
+  border-color: #a78bfa !important;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+}
+
+/* Tables */
+table thead {
+  background-color: #0d1121 !important;
+}
+
+table th {
+  color: #a5b4fc !important;
+  letter-spacing: 0.04em;
+}
+
+table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+table tbody tr:hover {
+  background-color: rgba(139, 92, 246, 0.07);
+}
+
+/* Threat highlighting */
+.glow-red {
+  box-shadow: 0 0 15px rgba(251, 113, 133, 0.15);
+}
+
+.glow-green {
+  box-shadow: 0 0 15px rgba(52, 211, 153, 0.15);
+}
+
+/* Modal */
+#forensic-modal > div {
+  background: #11162a !important;
+  border-color: #383252 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar-track {
+  background: #080b16;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #34304f;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6555a0;
+}
+
+/* Responsive sidebar on smaller screens */
+@media (max-width: 768px) {
+  body {
+    overflow: auto !important;
+    min-height: 100vh;
+    height: auto !important;
+  }
+
+  body > aside {
+    width: 64px !important;
+  }
+
+  body > aside h1,
+  body > aside p,
+  body > aside nav button span,
+  body > aside > div:last-child {
+    display: none;
+  }
+
+  body > aside nav {
+    padding: 8px;
+  }
+
+  body > aside nav button {
+    justify-content: center;
+    padding: 12px 8px;
+  }
+
+  main {
+    min-width: 0;
+  }
+
+  main > header {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  main > header > div:first-child {
+    display: none;
+  }
+
+  main > div {
+    padding: 12px !important;
+  }
+}
+
+body,
+button,
+input,
+select,
+textarea {
+    font-family: 'Inter', sans-serif;
+}
+
+code,
+pre,
+.packet-data,
+.ip-address,
+.timestamp,
+.port-number {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+h1, h2, h3, h4 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+}
+
+.stat-value,
+.metric-value {
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+}
+
+table {
+    font-variant-numeric: tabular-nums;
+}
+
+th {
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+nav a,
+nav button {
+    font-weight: 500;
+}
+
+  </style>
+</head>
+<body class="h-full font-sans antialiased overflow-hidden flex bg-[#06090e] text-slate-200">
+
+  <!-- Sidebar Navigation -->
+  <aside class="w-64 border-r border-slate-800/80 bg-slate-950/90 flex flex-col justify-between shrink-0 z-20">
+    <div>
+      <!-- Brand Logo -->
+      <div class="h-16 flex items-center px-6 border-b border-slate-800/80 gap-3">
+        <div class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 glow-cyan">
+          <i data-lucide="shield-alert" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h1 class="font-bold tracking-wider text-slate-100 text-base leading-none">Intrusion<span class="text-cyan-400">Detection</span></h1>
+        </div>
+      </div>
+
+      <!-- Nav Links -->
+      <nav class="p-4 space-y-1">
+        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn active w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Overview Dashboard</span>
+        </button>
+        <button onclick="switchTab('monitoring')" id="nav-monitoring" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-900 transition-colors">
+          <i data-lucide="activity" class="w-4 h-4"></i>
+          <span>Live Packet Monitor</span>
+        </button>
+        <button onclick="switchTab('threats')" id="nav-threats" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-900 transition-colors">
+          <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+          <span>Threat Alerts</span>
+          <span id="threat-badge" class="ml-auto bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-mono px-2 py-0.5 rounded-full">0</span>
+        </button>
+        <button onclick="switchTab('config')" id="nav-config" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-900 transition-colors">
+          <i data-lucide="sliders" class="w-4 h-4"></i>
+          <span>Detection Engine Rules</span>
+        </button>
+        <button onclick="switchTab('lab')" id="nav-lab" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-900 transition-colors">
+          <i data-lucide="book-open" class="w-4 h-4"></i>
+          <span>Lab Setup & Python Code</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Engine Controls & Status -->
+    <div class="p-4 border-t border-slate-800/80 space-y-3">
+      <div class="p-3 rounded-lg glass-panel space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-slate-400">IDS Engine Status</span>
+          <span id="engine-status-tag" class="inline-flex items-center gap-1.5 text-[11px] font-mono text-amber-400">
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span> CONNECTING
+          </span>
+        </div>
+        <button id="toggle-engine-btn" onclick="toggleEngine()" class="w-full py-1.5 px-3 rounded text-xs font-semibold tracking-wide border transition-all duration-200 bg-red-500/10 text-red-400 border-red-500/30 hover:bg-red-500/20">
+          Start Packet Capture
+        </button>
+      </div>
+
+      <!-- Live-only notice: no synthetic packets or attack simulation -->
+      <div class="p-3 rounded-lg glass-panel space-y-2">
+        <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Live traffic only</div>
+        <p class="text-xs text-slate-300 leading-relaxed">No demo packets are generated. Packet rows and alerts appear only when the selected interface observes real network traffic.</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    <!-- Top Bar Header -->
+    <header class="h-16 border-b border-slate-800/80 bg-slate-950/50 flex items-center justify-between px-6 shrink-0 backdrop-blur">
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2">
+          <span class="text-slate-400 text-sm">Interface:</span>
+          <span class="font-mono text-xs px-2 py-0.5 bg-slate-900 border border-slate-800 rounded text-cyan-400">Selected network interface</span>
+        </div>
+        <div class="h-4 w-px bg-slate-800"></div>
+        <div class="flex items-center gap-2">
+          <span class="text-slate-400 text-sm">Capture Filter:</span>
+          <span class="font-mono text-xs text-slate-300">tcp | udp | icmp</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="text-right">
+          <div class="text-xs text-slate-400 font-mono" id="system-time">--:--:-- UTC</div>
+          <div class="text-[10px] text-slate-500">Capture source: this computer</div>
+        </div>
+        <button onclick="resetSystemData()" class="p-2 text-slate-400 hover:text-white hover:bg-slate-900 rounded-lg border border-slate-800 transition" title="Clear dashboard counters (local view only)">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main View Dynamic Panels -->
+    <div class="flex-1 overflow-y-auto p-6 space-y-6">
+
+      <!-- ================= 1. OVERVIEW DASHBOARD VIEW ================= -->
+      <section id="tab-dashboard" class="tab-content space-y-6">
+        <!-- Metric Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Card 1 -->
+          <div class="p-4 rounded-xl glass-panel relative overflow-hidden group">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">IP Packets Analyzed</span>
+              <div class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400">
+                <i data-lucide="cpu" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3 flex items-baseline justify-between">
+              <span id="metric-total-packets" class="text-2xl font-bold font-mono text-white">0</span>
+              <span id="metric-packet-rate" class="text-xs font-mono text-cyan-400">0 pkt/s</span>
+            </div>
+            <div class="mt-2 w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+              <div class="bg-cyan-500 h-full w-full animate-pulse"></div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="p-4 rounded-xl glass-panel relative overflow-hidden group">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Threats Detected</span>
+              <div class="p-2 rounded-lg bg-red-500/10 text-red-400">
+                <i data-lucide="shield-alert" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3 flex items-baseline justify-between">
+              <span id="metric-threats-count" class="text-2xl font-bold font-mono text-red-400">0</span>
+              <span id="metric-threat-rate" class="text-xs font-mono text-red-400">0.0% alert rate</span>
+            </div>
+            <div class="mt-2 w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+              <div id="metric-threat-bar" class="bg-red-500 h-full w-0 transition-all duration-300"></div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="p-4 rounded-xl glass-panel relative overflow-hidden group">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Unique Source IPs</span>
+              <div class="p-2 rounded-lg bg-amber-500/10 text-amber-400">
+                <i data-lucide="ban" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3 flex items-baseline justify-between">
+              <span id="metric-source-ips" class="text-2xl font-bold font-mono text-amber-300">0</span>
+              <span class="text-xs font-mono text-slate-400">Observed in captured traffic</span>
+            </div>
+            <div class="mt-2 w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+              <div class="bg-amber-500 h-full w-full"></div>
+            </div>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="p-4 rounded-xl glass-panel relative overflow-hidden group">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Network Throughput</span>
+              <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
+                <i data-lucide="activity" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3 flex items-baseline justify-between">
+              <span id="metric-bandwidth" class="text-2xl font-bold font-mono text-emerald-400">0 KB/s</span>
+              <span class="text-xs font-mono text-slate-400">Peak: 12.4 MB/s</span>
+            </div>
+            <div class="mt-2 w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+              <div class="bg-emerald-500 h-full w-full"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Grid Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Main Traffic Chart -->
+          <div class="lg:col-span-2 p-5 rounded-xl glass-panel flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="text-sm font-semibold text-slate-100 flex items-center gap-2">
+                  <i data-lucide="line-chart" class="w-4 h-4 text-cyan-400"></i> Live Bandwidth & Packet Flow Rate
+                </h3>
+                <p class="text-xs text-slate-400">Real-time incoming packet volume vs detected anomaly spikes</p>
+              </div>
+              <div class="flex items-center gap-3 text-xs font-mono">
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span> Normal Flow</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-400"></span> Threat Traffic</span>
+              </div>
+            </div>
+            <div class="h-64 w-full">
+              <canvas id="trafficLineChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Protocol Distribution Pie Chart -->
+          <div class="p-5 rounded-xl glass-panel flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-sm font-semibold text-slate-100 flex items-center gap-2">
+                <i data-lucide="pie-chart" class="w-4 h-4 text-amber-400"></i> Protocol Breakdown
+              </h3>
+              <span class="text-[10px] font-mono bg-slate-900 border border-slate-800 text-slate-400 px-2 py-0.5 rounded">L3/L4 Layers</span>
+            </div>
+            <div class="h-60 w-full flex items-center justify-center">
+              <canvas id="protocolDoughnutChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Critical Alerts + Top Talkers Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Recent Critical Threats -->
+          <div class="p-5 rounded-xl glass-panel space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-semibold text-slate-100 flex items-center gap-2">
+                <i data-lucide="shield-alert" class="w-4 h-4 text-red-400"></i> Recent Critical Detections
+              </h3>
+              <button onclick="switchTab('threats')" class="text-xs text-cyan-400 hover:underline">View All Logs &rarr;</button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-800 text-[11px] font-mono text-slate-400 uppercase">
+                    <th class="pb-2">Time</th>
+                    <th class="pb-2">Source IP</th>
+                    <th class="pb-2">Attack Type</th>
+                    <th class="pb-2">Severity</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-alerts-body" class="text-xs font-mono divide-y divide-slate-800/60">
+                  <tr>
+                    <td colspan="4" class="py-4 text-center text-slate-500 font-sans">No critical threats recorded yet. Engine monitoring live streams...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Top Attack Origins (Interactive IP Threat Matrix) -->
+          <div class="p-5 rounded-xl glass-panel space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-semibold text-slate-100 flex items-center gap-2">
+                <i data-lucide="globe" class="w-4 h-4 text-cyan-400"></i> Top Observed Source IPs
+              </h3>
+              <span class="text-xs text-slate-400 font-mono">Observed hosts (dashboard block is not an OS firewall rule)</span>
+            </div>
+            <div id="high-risk-ip-list" class="space-y-2">
+              <div class="text-xs text-slate-500 text-center py-6">No source IPs observed yet. Start capture and wait for traffic.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. LIVE PACKET MONITORING VIEW ================= -->
+      <section id="tab-monitoring" class="tab-content hidden space-y-4">
+        <!-- Live Packet Stream Controls -->
+        <div class="p-4 rounded-xl glass-panel flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400">
+              <i data-lucide="terminal" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-semibold text-slate-100">Live Sniffer Inspection Terminal</h2>
+              <p class="text-xs text-slate-400">Real packets only. Filter by Apache host IP and port; HTTP request lines may appear for plaintext HTTP.</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <select id="interface-select" onchange="changeInterface(this.value)" title="Network interface to capture" class="px-2 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs font-mono text-slate-300 max-w-52">
+              <option value="auto">Default interface (auto)</option>
+            </select>
+            <input type="text" id="target-host-input" placeholder="Apache server IP (optional)" title="Only show traffic to/from this server IP" class="px-2 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs font-mono text-slate-200 w-44" />
+            <input type="number" id="server-port-input" min="0" max="65535" value="0" placeholder="Port (0=all)" title="Filter on either source or destination port; 0 means all ports" class="px-2 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs font-mono text-slate-200 w-24" />
+            <button onclick="applyCaptureFilter()" class="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/10 text-violet-300 text-xs font-medium hover:bg-violet-500/20">Apply Host Filter</button>
+            <div class="relative">
+              <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400"></i>
+              <input type="text" id="packet-filter-input" onkeyup="filterPackets()" placeholder="Filter IP, Protocol, Port..." class="pl-9 pr-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs font-mono focus:outline-none focus:border-cyan-500 w-64 text-slate-200" />
+            </div>
+            <button onclick="clearPacketStream()" class="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900 text-xs font-medium text-slate-300 hover:text-white transition">
+              Clear Buffer
+            </button>
+          </div>
+        </div>
+
+        <!-- Packet Log Stream Container -->
+        <div class="rounded-xl glass-panel overflow-hidden border border-slate-800">
+          <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+            <table class="w-full text-left border-collapse font-mono text-xs">
+              <thead class="bg-slate-950/90 sticky top-0 border-b border-slate-800 text-[11px] text-slate-400 uppercase tracking-wider z-10">
+                <tr>
+                  <th class="p-3">Timestamp</th>
+                  <th class="p-3">Source IP</th>
+                  <th class="p-3">Dest IP</th>
+                  <th class="p-3">Protocol</th>
+                  <th class="p-3">Port</th>
+                  <th class="p-3">Length</th>
+                  <th class="p-3">Flags / Flow</th>
+                  <th class="p-3">Status</th>
+                </tr>
+              </thead>
+              <tbody id="packet-stream-body" class="divide-y divide-slate-800/40 text-slate-300">
+                <!-- Packets dynamically appended here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 3. THREAT ALERTS & LOGS VIEW ================= -->
+      <section id="tab-threats" class="tab-content hidden space-y-4">
+        <!-- Threat Header & Filter Actions -->
+        <div class="p-4 rounded-xl glass-panel flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 class="text-sm font-semibold text-slate-100 flex items-center gap-2">
+              <i data-lucide="shield-alert" class="w-4 h-4 text-red-400"></i> Security Incident & Threat Alerts Log
+            </h2>
+            <p class="text-xs text-slate-400">Detailed records of policy violations, port scans, and SYN flood attempts</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <select id="severity-filter" onchange="filterThreatLogs()" class="px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs font-mono text-slate-300 focus:outline-none focus:border-cyan-500">
+              <option value="ALL">All Severities</option>
+              <option value="CRITICAL">Critical</option>
+              <option value="HIGH">High</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="LOW">Low</option>
+            </select>
+            <button onclick="exportLogs('csv')" class="px-3 py-1.5 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 rounded-lg text-xs font-medium flex items-center gap-1.5 transition">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Export CSV
+            </button>
+            <button onclick="exportLogs('json')" class="px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 rounded-lg text-xs font-medium flex items-center gap-1.5 transition">
+              <i data-lucide="file-json" class="w-3.5 h-3.5"></i> Export JSON
+            </button>
+          </div>
+        </div>
+
+        <!-- Threat Log Table -->
+        <div class="rounded-xl glass-panel overflow-hidden border border-slate-800">
+          <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+            <table class="w-full text-left border-collapse font-mono text-xs">
+              <thead class="bg-slate-950/90 sticky top-0 border-b border-slate-800 text-[11px] text-slate-400 uppercase tracking-wider z-10">
+                <tr>
+                  <th class="p-3">Timestamp</th>
+                  <th class="p-3">Threat Category</th>
+                  <th class="p-3">Source Host</th>
+                  <th class="p-3">Destination</th>
+                  <th class="p-3">Severity</th>
+                  <th class="p-3">Action Taken</th>
+                  <th class="p-3 text-right">Forensic Options</th>
+                </tr>
+              </thead>
+              <tbody id="threat-logs-body" class="divide-y divide-slate-800/40 text-slate-300">
+                <!-- Log rows dynamically injected -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 4. DETECTION CONFIGURATION VIEW ================= -->
+      <section id="tab-config" class="tab-content hidden space-y-6">
+        <div class="p-5 rounded-xl glass-panel space-y-2">
+          <h2 class="text-base font-semibold text-slate-100 flex items-center gap-2">
+            <i data-lucide="sliders" class="w-5 h-5 text-cyan-400"></i> IDS Threshold Tuning & Heuristics Config
+          </h2>
+          <p class="text-xs text-slate-400">Adjust active engine parameters for identifying network anomalies and rate-limiting triggers.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="p-5 rounded-xl glass-panel space-y-4">
+            <div class="flex items-center gap-3 border-b border-slate-800 pb-3">
+              <div class="p-2 rounded bg-amber-500/10 text-amber-400"><i data-lucide="radar" class="w-4 h-4"></i></div>
+              <div><h3 class="text-sm font-semibold text-slate-200">TCP SYN Port Scan Rule</h3><p class="text-xs text-slate-400">Distinct destination ports contacted by one source to one target within 3 seconds</p></div>
+            </div>
+            <div class="space-y-3 text-xs">
+              <label class="text-slate-300 font-medium flex justify-between mb-1"><span>Unique destination ports in 3 seconds:</span><span id="cfg-portscan-val" class="font-mono text-cyan-400">5 ports / 3 sec</span></label>
+              <input type="range" id="cfg-portscan-rate" min="2" max="20" value="5" oninput="updateConfigLabel(this, 'cfg-portscan-val', ' ports / 3 sec')" class="w-full accent-cyan-400 bg-slate-800" />
+            </div>
+          </div>
+          <div class="p-5 rounded-xl glass-panel space-y-4">
+            <div class="flex items-center gap-3 border-b border-slate-800 pb-3">
+              <div class="p-2 rounded bg-red-500/10 text-red-400"><i data-lucide="flame" class="w-4 h-4"></i></div>
+              <div><h3 class="text-sm font-semibold text-slate-200">Possible SYN Flood Rule</h3><p class="text-xs text-slate-400">SYN set and ACK unset packets from one source to one target within 2 seconds</p></div>
+            </div>
+            <div class="space-y-3 text-xs">
+              <label class="text-slate-300 font-medium flex justify-between mb-1"><span>SYN packets in 2 seconds:</span><span id="cfg-synflood-val" class="font-mono text-cyan-400">25 packets / 2 sec</span></label>
+              <input type="range" id="cfg-synflood-rate" min="5" max="200" value="25" oninput="updateConfigLabel(this, 'cfg-synflood-val', ' packets / 2 sec')" class="w-full accent-cyan-400 bg-slate-800" />
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end">
+          <button onclick="saveConfiguration()" class="px-5 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold rounded-lg text-xs transition flex items-center gap-2 glow-cyan">
+            <i data-lucide="save" class="w-4 h-4"></i> Save Rule Configurations
+          </button>
+        </div>
+      </section>
+
+      <!-- ================= 5. LAB SETUP & PYTHON DOCUMENTATION VIEW ================= -->
+      <section id="tab-lab" class="tab-content hidden space-y-6">
+        <div class="p-5 rounded-xl glass-panel space-y-2">
+          <h2 class="text-base font-semibold text-slate-100 flex items-center gap-2">
+            <i data-lucide="book-open" class="w-5 h-5 text-cyan-400"></i> Local Lab Setup & Python Scapy Backend Guide
+          </h2>
+          <p class="text-xs text-slate-400">Instructions for bridging this interface with live Linux network sockets using Scapy and Python.</p>
+        </div>
+
+        <!-- Architecture Overview -->
+        <div class="p-5 rounded-xl glass-panel space-y-3">
+          <h3 class="text-sm font-semibold text-cyan-400 flex items-center gap-2">
+            <i data-lucide="network" class="w-4 h-4"></i> Architecture Overview
+          </h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            This project uses a raw packet sniffer built using Python and <code class="text-cyan-300 bg-slate-900 px-1 py-0.5 rounded">Scapy</code> attaches to a network interface (e.g., <code class="text-cyan-300 bg-slate-900 px-1 py-0.5 rounded">eth0</code> or <code class="text-cyan-300 bg-slate-900 px-1 py-0.5 rounded">wlan0</code>). As packets arrive, packet headers are parsed, features are extracted (IP rates, TCP flags, port frequencies), and checked against the rule engine. Detected anomalies are streamed via WebSocket or HTTP API to this dashboard interface.
+          </p>
+        </div>
+
+        <!-- Executable Scapy Code Snippet -->
+        <div class="p-5 rounded-xl glass-panel space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-semibold text-slate-200 flex items-center gap-2">
+              <i data-lucide="code" class="w-4 h-4 text-emerald-400"></i> Live Packet Capture Backend Setup (<code class="text-xs font-mono text-slate-400">ids_sniffer.py</code>)
+            </h3>
+            <button onclick="copyPythonCode()" class="px-3 py-1 bg-slate-900 border border-slate-700 text-slate-300 rounded text-xs hover:text-white transition flex items-center gap-1">
+              <i data-lucide="copy" class="w-3 h-3"></i> Copy Code
+            </button>
+          </div>
+          <pre id="python-code-block" class="p-4 bg-slate-950 rounded-lg border border-slate-800 text-xs font-mono text-emerald-400 overflow-x-auto leading-relaxed">
+# Live capture runs in app.py (Python + Scapy + Flask-SocketIO).
+# Install dependencies: pip install -r requirements.txt
+# Start backend: python app.py
+# Open http://127.0.0.1:5000 in your browser.
+# Select the interface that sees your traffic (lo for localhost, eth0/ens33 for VM LAN).
+# Optionally enter Apache server IP and port 80 (or 443); blank IP and port 0 means all.
+# On Kali Linux install libpcap and run with sudo for packet-capture permissions.
+</pre>
+        </div>
+
+        <!-- Step-by-Step Lab Setup Instructions -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="p-5 rounded-xl glass-panel space-y-3">
+            <h3 class="text-sm font-semibold text-slate-200 flex items-center gap-2">
+              <i data-lucide="terminal" class="w-4 h-4 text-cyan-400"></i> Setup Steps (Linux / macOS)
+            </h3>
+            <ol class="list-decimal list-inside text-xs text-slate-300 space-y-2 leading-relaxed font-mono">
+              <li>Install dependencies: <code class="bg-slate-900 text-cyan-300 px-1 py-0.5 rounded">pip install scapy flask</code></li>
+              <li>Identify your network interface: <code class="bg-slate-900 text-cyan-300 px-1 py-0.5 rounded">ip a</code> or <code class="bg-slate-900 text-cyan-300 px-1 py-0.5 rounded">ifconfig</code></li>
+              <li>Execute sniffer with raw socket permissions: <code class="bg-slate-900 text-cyan-300 px-1 py-0.5 rounded">python app.py</code></li>
+              <li>Simulate traffic using Nmap: <code class="bg-slate-900 text-cyan-300 px-1 py-0.5 rounded">nmap -sS -p 1-1000 127.0.0.1</code></li>
+            </ol>
+          </div>
+
+          <div class="p-5 rounded-xl glass-panel space-y-3">
+            <h3 class="text-sm font-semibold text-slate-200 flex items-center gap-2">
+              <i data-lucide="alert-circle" class="w-4 h-4 text-amber-400"></i> Troubleshooting & Permissions
+            </h3>
+            <ul class="list-disc list-inside text-xs text-slate-300 space-y-2 leading-relaxed">
+              <li><strong class="text-slate-100">Permission Denied Errors:</strong> Packet capture requires root privileges (`sudo` on Linux/macOS or Administrator prompt on Windows).</li>
+              <li><strong class="text-slate-100">Windows Requirement:</strong> Requires <code class="text-cyan-300 font-mono">Npcap</code> or <code class="text-cyan-300 font-mono">WinPcap</code> installed with "WinPcap API-compatible mode" enabled.</li>
+              <li><strong class="text-slate-100">Promiscuous Mode:</strong> Ensure your network card supports and has promiscuous mode enabled to inspect adjacent subnet traffic.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Modal Forensics Detail Window -->
+  <div id="forensic-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 max-w-lg w-full mx-4 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-sm font-semibold text-slate-100 flex items-center gap-2">
+          <i data-lucide="file-text" class="w-4 h-4 text-cyan-400"></i> Threat Packet Forensic Inspection
+        </h3>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <div id="modal-content" class="space-y-3 text-xs font-mono text-slate-300">
+        <!-- Injected via Javascript -->
+      </div>
+      <div class="flex justify-end gap-2 border-t border-slate-800 pt-3">
+        <button onclick="closeModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded text-xs font-medium hover:bg-slate-700">Close</button>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.5/dist/socket.io.min.js"></script>
+
+  <!-- JavaScript App Logic -->
+  <script>
+    // --- Application State ---
+    let engineActive = false;
+    let liveSocket = null;
+    let totalPacketsAnalyzed = 0;
+    let threatsDetectedCount = 0;
+    let packetRate = 0;
+    let bytesTransferred = 0;
+    let packetsPerSecondCounter = 0;
+    let threatsPerSecondCounter = 0;
+    const protocolCounts = { TCP: 0, UDP: 0, ICMP: 0, IPv4: 0, IPv6: 0, OTHER: 0 };
+
+    // Detection Threshold Configs
+    let config = { portScanRate: 5, synFloodRate: 25 };
+
+    // Data Structures
+    let packetLogs = [];
+    let threatLogs = [];
+    let hostStats = {}; // Tracks rate limits per IP
+
+    // --- Chart Instances ---
+    let trafficLineChart, protocolDoughnutChart;
+
+    const PROTOCOL_COLORS = {
+      TCP: '#06b6d4',
+      UDP: '#f59e0b',
+      ICMP: '#10b981',
+      HTTP: '#8b5cf6',
+      SSH: '#ec4899'
+    };
+
+
+    // Initialize Application
+    window.onload = function() {
+      lucide.createIcons();
+      initCharts();
+      startSystemClock();
+      
+      // Connect to the Python backend; packets are only displayed when captured live.
+      connectLiveSocket();
+      setInterval(updateMetricsClock, 1000);
+    };
+
+    // --- Navigation System ---
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('bg-cyan-500/10', 'text-cyan-400', 'border', 'border-cyan-500/20');
+        btn.classList.add('text-slate-400');
+      });
+
+      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`nav-${tabId}`);
+      activeBtn.classList.add('bg-cyan-500/10', 'text-cyan-400', 'border', 'border-cyan-500/20');
+      activeBtn.classList.remove('text-slate-400');
+    }
+
+    // --- Live capture connection and engine control ---
+    function connectLiveSocket() {
+      if (typeof io === 'undefined') {
+        setEngineStatus(false, 'Socket.IO library failed to load');
+        return;
+      }
+      liveSocket = io();
+      liveSocket.on('connect', () => {
+        liveSocket.emit('get_interfaces');
+        liveSocket.emit('start_capture');
+      });
+      liveSocket.on('disconnect', () => setEngineStatus(false, 'Backend disconnected'));
+      liveSocket.on('connect_error', () => setEngineStatus(false, 'Cannot connect to backend'));
+      liveSocket.on('capture_filter', (data) => {
+        const hostInput = document.getElementById('target-host-input');
+        const portInput = document.getElementById('server-port-input');
+        if (hostInput && data) hostInput.value = data.target_ip || '';
+        if (portInput && data) portInput.value = Number(data.server_port || 0);
+      });
+      liveSocket.on('interfaces', (items) => {
+        const select = document.getElementById('interface-select');
+        if (!select) return;
+        const previous = select.value;
+        select.innerHTML = '';
+        (items || ['auto']).forEach((name) => {
+          const option = document.createElement('option');
+          option.value = name;
+          option.textContent = name === 'auto' ? 'Default interface (auto)' : name;
+          select.appendChild(option);
+        });
+        if ([...select.options].some(o => o.value === previous)) select.value = previous;
+      });
+      liveSocket.on('capture_status', (data) => setEngineStatus(!!data.active, data.message || ''));
+      liveSocket.on('packet', handleLivePacket);
+      liveSocket.on('threat', handleLiveThreat);
+      liveSocket.on('server_stats', (data) => {
+        if (data && Number.isFinite(data.total_packets)) totalPacketsAnalyzed = data.total_packets;
+        updateMetricsUI();
+      });
+      liveSocket.on('capture_error', (data) => {
+        setEngineStatus(false, data?.message || 'Capture error');
+        console.error('IDS capture error:', data?.message);
+      });
+    }
+
+    function setEngineStatus(active, message = '') {
+      engineActive = active;
+      const statusTag = document.getElementById('engine-status-tag');
+      const toggleBtn = document.getElementById('toggle-engine-btn');
+      if (!statusTag || !toggleBtn) return;
+      statusTag.innerHTML = active
+        ? '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> LIVE CAPTURE'
+        : '<span class="w-2 h-2 rounded-full bg-amber-400"></span> STOPPED / DISCONNECTED';
+      statusTag.className = `inline-flex items-center gap-1.5 text-[11px] font-mono ${active ? 'text-emerald-400' : 'text-amber-400'}`;
+      toggleBtn.textContent = active ? 'Stop Packet Capture' : 'Start Packet Capture';
+      toggleBtn.className = `w-full py-1.5 px-3 rounded text-xs font-semibold tracking-wide border transition-all duration-200 ${active ? 'bg-red-500/10 text-red-400 border-red-500/30 hover:bg-red-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'}`;
+      if (message) statusTag.title = message;
+    }
+
+    function toggleEngine() {
+      if (!liveSocket || !liveSocket.connected) {
+        alert('Start the Python backend first, then reload this dashboard.');
+        return;
+      }
+      liveSocket.emit(engineActive ? 'stop_capture' : 'start_capture');
+    }
+
+    function changeInterface(name) {
+      if (liveSocket && liveSocket.connected) liveSocket.emit('set_interface', { interface: name });
+    }
+
+    function applyCaptureFilter() {
+      if (!liveSocket || !liveSocket.connected) {
+        alert('Start the Python backend first, then reload this dashboard.');
+        return;
+      }
+      const target_ip = document.getElementById('target-host-input').value.trim();
+      const server_port = document.getElementById('server-port-input').value || '0';
+      liveSocket.emit('set_capture_filter', { target_ip, server_port });
+    }
+
+    // --- Data Reset ---
+    function resetSystemData() {
+      totalPacketsAnalyzed = 0;
+      threatsDetectedCount = 0;
+      packetLogs = [];
+      threatLogs = [];
+      hostStats = {};
+      document.getElementById('packet-stream-body').innerHTML = '';
+      document.getElementById('threat-logs-body').innerHTML = '';
+      document.getElementById('dash-alerts-body').innerHTML = '<tr><td colspan="4" class="py-4 text-center text-slate-500 font-sans">No critical threats recorded yet. Engine monitoring live streams...</td></tr>';
+      updateMetricsUI();
+      document.getElementById('threat-badge').textContent = '0';
+    }
+
+    // --- Real packet events from the Python/Scapy backend ---
+    function handleLivePacket(pkt) {
+      if (!pkt) return;
+      totalPacketsAnalyzed++;
+      const protoKey = Object.prototype.hasOwnProperty.call(protocolCounts, pkt.protocol) ? pkt.protocol : 'OTHER';
+      protocolCounts[protoKey] = (protocolCounts[protoKey] || 0) + 1;
+      if (protocolDoughnutChart) {
+        protocolDoughnutChart.data.labels = Object.keys(protocolCounts);
+        protocolDoughnutChart.data.datasets[0].data = Object.values(protocolCounts);
+        protocolDoughnutChart.update('none');
+      }
+      packetsPerSecondCounter++;
+      bytesTransferred += Number(pkt.pktLen || 0);
+      const ip = pkt.srcIP || 'Unknown';
+      if (!hostStats[ip]) hostStats[ip] = { ports: new Set(), packetCount: 0, synCount: 0, lastReset: Date.now() };
+      const stats = hostStats[ip];
+      if (Date.now() - stats.lastReset > 3000) {
+        stats.ports.clear(); stats.packetCount = 0; stats.synCount = 0; stats.lastReset = Date.now();
+      }
+      if (pkt.port !== null && pkt.port !== undefined && pkt.port !== '-') stats.ports.add(Number(pkt.port));
+      stats.packetCount++;
+      if ((pkt.flags || '').includes('S')) stats.synCount++;
+      packetLogs.unshift(pkt);
+      if (packetLogs.length > 100) packetLogs.pop();
+      renderPacketRow(pkt);
+      updateMetricsUI();
+      updateHighRiskHosts();
+      filterPackets();
+    }
+
+    function handleLiveThreat(alert) {
+      if (!alert) return;
+      threatsDetectedCount++;
+      threatsPerSecondCounter++;
+      threatLogs.unshift(alert);
+      if (threatLogs.length > 50) threatLogs.pop();
+      renderThreatAlert(alert);
+      updateDashboardThreats(alert);
+      updateMetricsUI();
+    }
+
+    // --- UI Renderers ---
+    function renderPacketRow(pkt) {
+      const tbody = document.getElementById('packet-stream-body');
+      const row = document.createElement('tr');
+      row.className = pkt.status === 'ALERT' ? 'bg-red-500/10 hover:bg-red-500/20 text-red-300' : 'hover:bg-slate-900/60';
+      
+      let badgeClass = 'bg-slate-800 text-slate-300 border-slate-700';
+      if (pkt.status === 'ALERT') badgeClass = 'bg-red-500/20 text-red-400 border-red-500/30';
+
+      row.innerHTML = `
+        <td class="p-3 font-mono text-slate-400">${pkt.timestamp}</td>
+        <td class="p-3 font-mono text-cyan-400">${pkt.srcIP}</td>
+        <td class="p-3 font-mono text-slate-400">${pkt.dstIP}</td>
+        <td class="p-3"><span class="px-1.5 py-0.5 rounded text-[10px] font-semibold border ${getProtocolBadgeStyle(pkt.protocol)}">${pkt.protocol}</span></td>
+        <td class="p-3 font-mono text-slate-300">${pkt.port}</td>
+        <td class="p-3 font-mono text-slate-400">${pkt.pktLen} B</td>
+        <td class="p-3 font-mono text-slate-400">${pkt.flags || '-'}</td>
+        <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] border ${badgeClass}">${pkt.status}</span></td>
+      `;
+
+      tbody.insertBefore(row, tbody.firstChild);
+      if (tbody.children.length > 30) tbody.removeChild(tbody.lastChild);
+    }
+
+    function renderThreatAlert(alert) {
+      const tbody = document.getElementById('threat-logs-body');
+      const row = document.createElement('tr');
+      row.className = 'hover:bg-slate-900/60';
+
+      let sevClass = 'bg-slate-800 text-slate-300';
+      if (alert.severity === 'CRITICAL') sevClass = 'bg-red-500/20 text-red-400 border border-red-500/30';
+      if (alert.severity === 'HIGH') sevClass = 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
+      if (alert.severity === 'MEDIUM') sevClass = 'bg-orange-500/20 text-orange-400 border border-orange-500/30';
+
+      row.innerHTML = `
+        <td class="p-3 font-mono text-slate-400">${alert.timestamp}</td>
+        <td class="p-3 font-semibold text-slate-200">${alert.threatType}</td>
+        <td class="p-3 font-mono text-cyan-400">${alert.srcIP}</td>
+        <td class="p-3 font-mono text-slate-400">${alert.dstIP}</td>
+        <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${sevClass}">${alert.severity}</span></td>
+        <td class="p-3 text-slate-300">${alert.action}</td>
+        <td class="p-3 text-right">
+          <button onclick="openModal('${alert.id}')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[11px] transition">Forensics</button>
+        </td>
+      `;
+
+      tbody.insertBefore(row, tbody.firstChild);
+      document.getElementById('threat-badge').textContent = threatLogs.length;
+    }
+
+    function updateDashboardThreats(alert) {
+      const dashBody = document.getElementById('dash-alerts-body');
+      if (dashBody.children[0]?.children[0]?.hasAttribute('colspan')) {
+        dashBody.innerHTML = '';
+      }
+
+      const row = document.createElement('tr');
+      row.className = 'hover:bg-slate-900/50';
+      row.innerHTML = `
+        <td class="py-2 text-slate-400">${alert.timestamp}</td>
+        <td class="py-2 text-cyan-400">${alert.srcIP}</td>
+        <td class="py-2 text-slate-200 font-semibold">${alert.threatType}</td>
+        <td class="py-2"><span class="px-1.5 py-0.5 rounded text-[10px] bg-red-500/20 text-red-400 border border-red-500/30">${alert.severity}</span></td>
+      `;
+
+      dashBody.insertBefore(row, dashBody.firstChild);
+      if (dashBody.children.length > 5) dashBody.removeChild(dashBody.lastChild);
+
+      updateHighRiskHosts();
+    }
+
+    function updateHighRiskHosts() {
+      const listContainer = document.getElementById('high-risk-ip-list');
+      listContainer.innerHTML = '';
+
+      const topThreatHosts = Object.entries(hostStats)
+        .sort((a, b) => b[1].packetCount - a[1].packetCount)
+        .slice(0, 4);
+
+      if (topThreatHosts.length === 0) {
+        listContainer.innerHTML = `<div class="text-xs text-slate-500 text-center py-6">No source IPs observed yet. Start capture and wait for traffic.</div>`;
+        return;
+      }
+
+      topThreatHosts.forEach(([ip, stats]) => {
+        const div = document.createElement('div');
+        div.className = 'p-3 rounded-lg bg-slate-900/80 border border-slate-800 flex items-center justify-between text-xs font-mono';
+        div.innerHTML = `
+          <div>
+            <div class="font-semibold text-slate-200 flex items-center gap-2">
+              <span>${ip}</span>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-0.5">Ports touched: ${stats.ports.size} | Rate: ${stats.packetCount} pkts/window</div>
+          </div>
+        `;
+        listContainer.appendChild(div);
+      });
+    }
+
+
+    // --- Metrics & UI Timers ---
+    function updateMetricsClock() {
+      packetRate = packetsPerSecondCounter;
+      packetsPerSecondCounter = 0;
+
+      updateMetricsUI();
+      updateChartData();
+    }
+
+    function updateMetricsUI() {
+      document.getElementById('metric-total-packets').textContent = totalPacketsAnalyzed.toLocaleString();
+      document.getElementById('metric-packet-rate').textContent = `${packetRate} pkt/s`;
+      document.getElementById('metric-threats-count').textContent = threatsDetectedCount;
+      document.getElementById('metric-source-ips').textContent = Object.keys(hostStats).length;
+
+      const kbps = (bytesTransferred / 1024).toFixed(1);
+      document.getElementById('metric-bandwidth').textContent = `${kbps} KB/s`;
+      bytesTransferred = 0; // reset for bandwidth rate
+
+      const threatRatio = totalPacketsAnalyzed > 0 ? ((threatsDetectedCount / totalPacketsAnalyzed) * 100).toFixed(1) : 0;
+      document.getElementById('metric-threat-rate').textContent = `${threatRatio}% alert rate`;
+      document.getElementById('metric-threat-bar').style.width = `${Math.min(threatRatio * 4, 100)}%`;
+    }
+
+    function startSystemClock() {
+      setInterval(() => {
+        const now = new Date();
+        document.getElementById('system-time').textContent = now.toUTCString().split(' ')[4] + ' UTC';
+      }, 1000);
+    }
+
+    function getProtocolBadgeStyle(proto) {
+      switch(proto) {
+        case 'TCP': return 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20';
+        case 'UDP': return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+        case 'ICMP': return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+        case 'HTTP': return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+        case 'SSH': return 'bg-pink-500/10 text-pink-400 border-pink-500/20';
+        default: return 'bg-slate-800 text-slate-300 border-slate-700';
+      }
+    }
+
+    // --- Chart Implementations ---
+    function initCharts() {
+      const lineCtx = document.getElementById('trafficLineChart').getContext('2d');
+      trafficLineChart = new Chart(lineCtx, {
+        type: 'line',
+        data: {
+          labels: Array(15).fill(''),
+          datasets: [
+            {
+              label: 'Normal Traffic (pkt/s)',
+              data: Array(15).fill(0),
+              borderColor: '#06b6d4',
+              backgroundColor: 'rgba(6, 182, 212, 0.1)',
+              fill: true,
+              tension: 0.4,
+              borderWidth: 2
+            },
+            {
+              label: 'Threat Spike',
+              data: Array(15).fill(0),
+              borderColor: '#ef4444',
+              backgroundColor: 'rgba(239, 68, 68, 0.15)',
+              fill: true,
+              tension: 0.4,
+              borderWidth: 2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+            y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, beginAtZero: true }
+          }
+        }
+      });
+
+      const pieCtx = document.getElementById('protocolDoughnutChart').getContext('2d');
+      protocolDoughnutChart = new Chart(pieCtx, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(protocolCounts),
+          datasets: [{
+            data: Object.values(protocolCounts),
+            backgroundColor: ['#06b6d4', '#f59e0b', '#10b981', '#8b5cf6', '#ec4899'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10, family: 'JetBrains Mono' } } }
+          }
+        }
+      });
+    }
+
+    function updateChartData() {
+      if (!trafficLineChart) return;
+      const normalVal = packetRate;
+      const threatVal = threatsPerSecondCounter;
+      threatsPerSecondCounter = 0;
+
+      trafficLineChart.data.labels.shift();
+      trafficLineChart.data.labels.push('');
+      trafficLineChart.data.datasets[0].data.shift();
+      trafficLineChart.data.datasets[0].data.push(normalVal);
+      trafficLineChart.data.datasets[1].data.shift();
+      trafficLineChart.data.datasets[1].data.push(threatVal);
+      trafficLineChart.update();
+    }
+
+    // --- Modal & Forensics ---
+    function openModal(alertId) {
+      const alert = threatLogs.find(a => a.id.toString() === alertId.toString());
+      if (!alert) return;
+
+      const content = document.getElementById('modal-content');
+      content.innerHTML = `
+        <div class="p-3 bg-slate-950 rounded border border-slate-800 space-y-1">
+          <div class="text-slate-400">Alert ID: <span class="text-slate-200">${alert.id}</span></div>
+          <div class="text-slate-400">Timestamp: <span class="text-slate-200">${alert.timestamp}</span></div>
+          <div class="text-slate-400">Threat Rule: <span class="text-red-400 font-bold">${alert.threatType}</span></div>
+        </div>
+        <div class="space-y-1">
+          <div class="text-slate-400">Source Host: <span class="text-cyan-400">${alert.srcIP}</span></div>
+          <div class="text-slate-400">Destination: <span class="text-slate-200">${alert.dstIP}</span></div>
+          <div class="text-slate-400">Engine Details: <span class="text-amber-300">${alert.details}</span></div>
+        </div>
+      `;
+
+      document.getElementById('forensic-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('forensic-modal').classList.add('hidden');
+    }
+
+    // --- Configuration Logic ---
+    function updateConfigLabel(el, targetId, suffix) {
+      document.getElementById(targetId).textContent = el.value + suffix;
+    }
+
+    function saveConfiguration() {
+      config.portScanRate = parseInt(document.getElementById('cfg-portscan-rate').value);
+      config.synFloodRate = parseInt(document.getElementById('cfg-synflood-rate').value);
+      if (liveSocket && liveSocket.connected) liveSocket.emit('set_config', config);
+      alert('Live IDS detection thresholds updated.');
+    }
+
+    // --- Helper Functions & Export ---
+    function filterPackets() {
+      const filter = document.getElementById('packet-filter-input').value.toLowerCase();
+      const rows = document.querySelectorAll('#packet-stream-body tr');
+      rows.forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
+      });
+    }
+
+    function filterThreatLogs() {
+      const sev = document.getElementById('severity-filter').value;
+      const rows = document.querySelectorAll('#threat-logs-body tr');
+      rows.forEach(row => {
+        if (sev === 'ALL') {
+          row.style.display = '';
+        } else {
+          row.style.display = row.textContent.includes(sev) ? '' : 'none';
+        }
+      });
+    }
+
+    function clearPacketStream() {
+      document.getElementById('packet-stream-body').innerHTML = '';
+      packetLogs = [];
+    }
+
+    function exportLogs(format) {
+      if (threatLogs.length === 0) {
+        alert('No threat logs available to export.');
+        return;
+      }
+      let content = '';
+      let mimeType = 'text/plain';
+      let filename = `ids_threat_logs_${Date.now()}.${format}`;
+
+      if (format === 'json') {
+        content = JSON.stringify(threatLogs, null, 2);
+        mimeType = 'application/json';
+      } else {
+        content = 'Timestamp,Source_IP,Dest_IP,Threat_Type,Severity,Action\n';
+        threatLogs.forEach(l => {
+          content += `${l.timestamp},${l.srcIP},${l.dstIP},"${l.threatType}",${l.severity},"${l.action}"\n`;
+        });
+        mimeType = 'text/csv';
+      }
+
+      const blob = new Blob([content], { type: mimeType });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+    }
+
+    function copyPythonCode() {
+      const code = document.getElementById('python-code-block').innerText;
+      const tempTextArea = document.createElement('textarea');
+      tempTextArea.value = code;
+      document.body.appendChild(tempTextArea);
+      tempTextArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempTextArea);
+      alert('Python Scapy script copied to clipboard!');
+    }
+  </script>
+</body>
+</html>
